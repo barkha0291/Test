@@ -5,7 +5,7 @@ import {
     Text,
     Platform
 } from 'react-native';
-class WMHeader extends React.Component {    
+class Header extends React.Component {    
         render() {
             let options = this.props.title
             return (
@@ -17,7 +17,7 @@ class WMHeader extends React.Component {
 
 
 };
-export default (WMHeader);
+export default (Header);
 const styles = StyleSheet.create({
     headerTitleStyle: {
         flexWrap:'wrap',

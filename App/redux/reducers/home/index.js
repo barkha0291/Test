@@ -1,9 +1,11 @@
-import { 
+import {
     GET_HOME_DETAIL_FINISH,
     GET_HOME_DETAIL_CARD_FINISH,
-} from "../../../Config/WMActionTypes";
+    API_START,
+    API_FINISH,
+} from "../../../Config/ActionTypes";
 
-const initialState = {video: []};
+const initialState = { video: [], loading: false };
 
 const apiReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -14,10 +16,16 @@ const apiReducer = (state = initialState, action) => {
             }
 
         case GET_HOME_DETAIL_CARD_FINISH:
-            return{
+            return {
                 ...state,
                 homeDataCard: action.payload
             }
+
+        case API_START:
+            return { ...state, loading: true };
+            
+        case API_FINISH:
+            return { ...state, loading: false };
 
         default:
             return state;

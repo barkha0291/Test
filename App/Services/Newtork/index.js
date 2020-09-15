@@ -1,12 +1,8 @@
-// const BASE_API = LOCAL_BASE_API;
 import axios from "axios";
-var qs = require('qs');
 import { 
-    BASE_URL, 
     PARSER_URL
-} from '../../Config/WMConstants';
+} from '../../Config/Constants';
 
-import { OCP_APIM_SUBSCRIPTION_KEY } from '../../Config/key';
 class Api {
     static headers() {
         return {

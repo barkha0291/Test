@@ -2,19 +2,18 @@ import React from 'react';
 import {
     Dimensions,
     FlatList,
-    Text,
     View,
     StyleSheet,
 } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 import navigationOpt from "../../Config/NavigatorOption";
 import { connect } from "react-redux";
-import { GET_HOME_DETAIL } from "../../Config/WMActionTypes";
-import { HOME_URL } from '../../Config/WMConstants';
+import { GET_HOME_DETAIL } from "../../Config/ActionTypes";
+import { HOME_URL } from '../../Config/Constants';
 import store from '../../redux/store';
-import _ from 'underscore';
-import ExpendableButton from '../../Components/ExpandbleViewCard';
-import { SearchBar } from 'react-native-elements';
+import _ from 'underscore'
+import ImageSlider from '../../Components/ImageSlider';
+import Utills from '../../Utills/Utills';
 
 class HomeScreenView extends React.Component {
 
@@ -30,16 +29,7 @@ class HomeScreenView extends React.Component {
         super(props)
         this.state = {
             screenWidth: Dimensions.get('window').width,
-            prepareFood: true,
-            pageTitle: '',
-            expandProduction: false,
-            expandMerchant: false,
-            expandSpeciality: false,
-            expandMember: false,
-            connectivity: true,
-            searchText: "",
-            data: [],
-            filteredData: []
+            data: []
         }
 
     }
@@ -53,60 +43,37 @@ class HomeScreenView extends React.Component {
     }
 
     static getDerivedStateFromProps(props, state) {
-        if (state.data !== props.homeData && props.homeData !== undefined && props.homeData.results.length > 0) {
-          return {
-            data: props.homeData.results,
-          }
+        if (state.data !== props.homeData && props.homeData !== undefined) {
+            return {
+                data: props.homeData,
+            }
         }
         return null
-      }
+    }
 
-    search = searchText => {
-        this.setState({searchText: searchText})
-        const newData = this.state.data.filter(item => {      
-            const itemData = `${item.name.toUpperCase()}   
-            ${item.name.toUpperCase()} ${item.name.toUpperCase()}`;
-            
-             const textData = searchText.toUpperCase();
-              
-             return itemData.indexOf(textData) > -1;    
-          });
-          
-          this.setState({ filteredData: newData });  
-      };
-    
     render() {
 
         const { homeData, loading } = this.props;
         let data = homeData || [];
+        let imageList = _.shuffle(Utills.filterImageList(data))
+        
         return (
-            <View style={inner_styles.container}>
+            <View style={styles.container}>
                 <Spinner
                     visible={loading}
                     textContent={'Loading...'}
-                    textStyle={inner_styles.spinnerTextStyle}
-                />
-                <SearchBar
-                lightTheme
-                clearIcon={{
-                    iconStyle: { margin: 10 },
-                    containerStyle: { margin: -10 },
-                  }}
-                    placeholder="Type Here..."
-                    autoCorrect={false}
-                    onChangeText={this.search}
-                    value={this.state.searchText}
+                    textStyle={styles.spinnerTextStyle}
                 />
 
-                <FlatList
-                    style={{ backgroundColor: '#f4f4f9' }}
-                    data={this.state.filteredData && this.state.filteredData.length > 0 ? this.state.filteredData : data.results}
+              <FlatList
+                    style={{ backgroundColor: '#f4f4f9'}}
+                    data={imageList}
                     refreshing={false}
+                    horizontal
                     onRefresh={() => store.dispatch({ type: GET_HOME_DETAIL, url: HOME_URL })}
-                    testID={'homeCardScrollView'}
                     renderItem={({ item, index }) => {
                         return (
-                            <ExpendableButton
+                            <ImageSlider
                                 data={item}
                                 key={index}
                                 keyIndex={index}
@@ -114,45 +81,41 @@ class HomeScreenView extends React.Component {
                         )
                     }}
                 />
-
-                {loading ? <View style={inner_styles.exceptionView}>
-                    {loading ? <Text style={inner_styles.exceptionText}>Loading </Text> : null}
-                </View> : null}
-
-
-
             </View>);
     }
 }
 
 const mapStateToProps = state => ({
     homeData: state.apiReducer.homeData,
-    loading: state.userReducer.loading
+    loading: state.apiReducer.loading
 });
 
 const mapDispatchToProps = {
 };
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreenView);
 
-const inner_styles = StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingBottom: 10,
-        backgroundColor: '#f4f4f9',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        backgroundColor: '#f4f4f9'
 
     },
     spinnerTextStyle: {
         color: '#fff',
         fontSize: 12
     },
-    exceptionText: {
-        fontSize: 20,
-        fontWeight: '600',
-        color: '#ccc',
-        alignSelf: 'center'
-    },
-    exceptionView: {
-        justifyContent: 'center',
-        marginBottom: 300
+    image:{
+        height: 250, 
+        paddingTop: 5,
+        paddingBottom: 10,
+        paddingLeft:10,
+        paddingRight:10,
+        shadowOpacity: 0.75,
+        shadowRadius: 5,
+        shadowColor: 'red',
+        shadowOffset: { height: 5, width: 5 },
     }
 });
